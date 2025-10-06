@@ -9,9 +9,19 @@ TexureConverter::TexureConverter() {
 TexureConverter::~TexureConverter() {
 }
 
-void TexureConverter::ConvertTextureWICToDDS(const std::string& filepath) {
+void TexureConverter::ConvertTextureWICToDDS(const std::string& filepath, int numOptions, char* options[]) {
 	LoadWICTextureFromFile(filepath);
-	SaveDDSTextureToFile();
+	SaveDDSTextureToFile(numOptions, options);
+}
+
+void TexureConverter::OutputUsage() {
+	printf("画像ファイルをWIC形式からDDS形式に変換します。\n");
+	printf("\n");
+	printf("TexureConverter [ドライブ][パス]ファイル名 [-ml level]\n");
+	printf("\n");
+	printf("[ドライブ][パス]ファイル名: 変換したいWIC形式の画像を指定します。\n");
+	printf("[-ml level]: ミップレベルを指定します。0を指定すると1x1のフルミップマップチェーンを生成します。\n");
+
 }
 
 std::wstring TexureConverter::ConvertMultiByteStringToWideString(const std::string& mString) {
@@ -69,11 +79,20 @@ void TexureConverter::SeparateFilePath(const std::wstring& filePath) {
 	fileName_ = exceptExt;
 }
 
-void TexureConverter::SaveDDSTextureToFile() {
+void TexureConverter::SaveDDSTextureToFile(int numOptions, char* options[]) {
 	ScratchImage mipChain;
 	HRESULT result;
+
+	size_t mipLevel = 0;
+	for (int i = 0; i < numOptions; i++) {
+		if (std::string(options[i]) == "-ml") {
+			mipLevel = std::stoi(options[i + 1]);
+			break;
+		}
+	}
+
 	result = GenerateMipMaps(scratchImage_.GetImages(), scratchImage_.GetImageCount(), scratchImage_.GetMetadata(),
-		TEX_FILTER_DEFAULT, 0, mipChain);
+		TEX_FILTER_DEFAULT, mipLevel, mipChain);
 	if (SUCCEEDED(result)) {
 		scratchImage_ = std::move(mipChain);
 		metadata_ = scratchImage_.GetMetadata();

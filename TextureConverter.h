@@ -9,13 +9,16 @@ public:
 	TexureConverter();
 	~TexureConverter();
 
-	void ConvertTextureWICToDDS(const std::string& filepath);
+	void ConvertTextureWICToDDS(const std::string& filepath,
+		int numOptions = 0, char* options[] = nullptr);
+
+	static void OutputUsage();
 
 private:
 	static std::wstring ConvertMultiByteStringToWideString(const std::string& mString);
 	void LoadWICTextureFromFile(const std::string& filepath);
 	void SeparateFilePath(const std::wstring& filePath);
-	void SaveDDSTextureToFile();
+	void SaveDDSTextureToFile(int numOptions, char* options[]);
 
 	DirectX::TexMetadata metadata_;
 	DirectX::ScratchImage scratchImage_;

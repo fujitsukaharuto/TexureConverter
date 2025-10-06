@@ -14,12 +14,20 @@ enum Argument {
 };
 
 int main(int argc, char* argv[]) {
-	assert(argc >= NumArgument);
+	if (argc < NumArgument) {
+		TexureConverter::OutputUsage();
+		return 0;
+	}
+
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));
 
 	TexureConverter converter;
-	converter.ConvertTextureWICToDDS(argv[kFilePath]);
+
+	int numOptions = argc - NumArgument;
+	char** options = argv + NumArgument;
+
+	converter.ConvertTextureWICToDDS(argv[kFilePath], numOptions, options);
 
 	for (int i = 0; i < argc; i++) {
 		printf(argv[i]);
