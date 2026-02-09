@@ -16,6 +16,7 @@ enum Argument {
 int main(int argc, char* argv[]) {
 	if (argc < NumArgument) {
 		TexureConverter::OutputUsage();
+		system("pause");
 		return 0;
 	}
 
